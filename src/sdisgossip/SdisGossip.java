@@ -15,8 +15,10 @@ public class SdisGossip {
     
     public static void main(String[] args) {
         
-        Grid meshNetwork = new Grid(10, 7, 7);
+        Grid meshNetwork = new Grid(10, 6, 7);
+        int currentMsgState = 1;
         
+        // DEBUG ONLY: Prints the recently generated network
         meshNetwork.printNetwork();
         
         // Building the neightbour list for EACH of the nodes
@@ -28,18 +30,27 @@ public class SdisGossip {
         
         // The Algorithm Iterations
         
-        meshNetwork.nodes.get(0).setMessageState(1); // The initial propagation to the root node
+        meshNetwork.nodes.get(0).setMessageState(currentMsgState++); // The initial propagation to the root node
         
-        for(int t=0; t < 20; t++) {
+        for(int t=0; t < 10; t++) {
             // The Nodes Push their updates
             for(int i=0; i < meshNetwork.numNodes; i++) {
                 meshNetwork.nodes.get(i).pushMessageState();
             }
             
-            System.out.println("Iteration " + t + ":");
-            meshNetwork.printMessageStateList();
-            System.out.println("********************");
+            // DEBUG ONLY: Prints the network state
+            //System.out.println("Iteration " + t + ":");
+            //meshNetwork.printMessageStateList();
+            //System.out.println("********************");
+            
+            // We propagate the next update to the ROOT node
+            meshNetwork.nodes.get(0).setMessageState(currentMsgState++);
         }
+        
+        // DEBUG ONLY: Prints the FINAL network state
+        System.out.println("Final Network State: ");
+        meshNetwork.printMessageStateList();
+        System.out.println("********************");
            
     }
     
