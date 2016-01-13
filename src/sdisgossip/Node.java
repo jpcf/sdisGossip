@@ -1,12 +1,15 @@
 package sdisgossip;
 
 import java.util.ArrayList;
-import java.math.*;
+import java.util.Random;
 
 public class Node {
-	GridPoint gridPosition = null;
+	
 	int messageState; 
 	ArrayList<Node> neighbourNodes = null;
+        GridPoint gridPosition = null;
+        Node lastCommNode = null;
+        Random randGenerator = new Random();
 	
 	public Node(int xPos, int yPos) {
 		this.gridPosition = new GridPoint(xPos, yPos);
@@ -54,5 +57,27 @@ public class Node {
             for(int i=0; i < this.neighbourNodes.size(); i++) {
                 System.out.println("(" + this.neighbourNodes.get(i).getXcoordinate() +"," + this.neighbourNodes.get(i).getYcoordinate() +")");
             }
+        }
+        
+        public int getMessageState() {
+            return this.messageState;
+        }
+        
+        public void setMessageState(int NEWmessageState) {
+            this.messageState = NEWmessageState;
+        }
+        
+        public boolean pushMessageState() {
+            // Pick a random node from the list of Neighbours
+            Node otherNode = neighbourNodes.get(randGenerator.nextInt(this.neighbourNodes.size()));
+            
+            // If that node's message is different than ours, we update it
+            if (otherNode.getMessageState() < this.messageState) {
+                otherNode.setMessageState(this.messageState);
+                return true;   // We return TRUE if we succeded in updating the message
+            } else {
+                return false;  // We return FALSE if the message was already up to date
+            }
+            
         }
 }

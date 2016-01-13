@@ -60,4 +60,10 @@ public class Grid {
             
             return count;
         }
+        
+        public void printMessageStateList() {
+            for(int i=0; i < this.numNodes; i++) {
+                System.out.println("Node (" + i + ") @(" + nodes.get(i).getXcoordinate() +","+nodes.get(i).getYcoordinate() +"): " + nodes.get(i).getMessageState());
+            }
+        }
 }
