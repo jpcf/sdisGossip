@@ -31,17 +31,17 @@ public class SdisGossip {
         // The Algorithm Iterations
         
         meshNetwork.nodes.get(0).setMessageState(currentMsgState++); // The initial propagation to the root node
+        meshNetwork.nodes.get(0).commitMessageState(); // The initial propagation to the root node
         
         for(int t=0; t < 10; t++) {
-            // The Nodes Push their updates
-            for(int i=0; i < meshNetwork.numNodes; i++) {
-                meshNetwork.nodes.get(i).pushMessageState();
-            }
+            
+            // The nodes update their state
+            meshNetwork.pushUpdates();
             
             // DEBUG ONLY: Prints the network state
-            //System.out.println("Iteration " + t + ":");
-            //meshNetwork.printMessageStateList();
-            //System.out.println("********************");
+            System.out.println("Iteration " + t + ":");
+            meshNetwork.printMessageStateList();
+            System.out.println("********************");
             
             // We propagate the next update to the ROOT node
             meshNetwork.nodes.get(0).setMessageState(currentMsgState++);

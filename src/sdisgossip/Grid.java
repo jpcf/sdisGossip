@@ -37,12 +37,23 @@ public class Grid {
             
 	}
 	
-	public void printNetwork() {
-		for (int i = 0; i < this.numNodes; i++){
-			System.out.println("node " + i + "(" + nodes.get(i).gridPosition.xPos + "," + nodes.get(i).gridPosition.yPos + ")");
-		}
-	}
+        public void pushUpdates() {
+            // The Nodes Push their updates
+            for(int i=0; i < this.numNodes; i++) {
+                this.nodes.get(i).pushMessageState();
+            }
+            
+            // The updates are committed
+            this.commitUpdates();
+        }
         
+	public void commitUpdates() {
+            // We commit the current message state in all nodes
+            // This prevents that nodes change state in chain, during the same timestep
+            for(int i=0; i < this.numNodes; i++) {
+                nodes.get(i).commitMessageState();
+            }
+        }
         public int buildNeighbourList(Node node) {
             
             int count = 0;
@@ -60,6 +71,12 @@ public class Grid {
             
             return count;
         }
+        
+        public void printNetwork() {
+		for (int i = 0; i < this.numNodes; i++){
+			System.out.println("node " + i + "(" + nodes.get(i).gridPosition.xPos + "," + nodes.get(i).gridPosition.yPos + ")");
+		}
+	}
         
         public void printMessageStateList() {
             for(int i=0; i < this.numNodes; i++) {

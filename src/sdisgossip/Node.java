@@ -6,6 +6,7 @@ import java.util.Random;
 public class Node {
 	
 	int messageState; 
+        int messageStateNEXT;
 	ArrayList<Node> neighbourNodes = null;
         GridPoint gridPosition = null;
         Node lastCommNode = null;
@@ -64,7 +65,7 @@ public class Node {
         }
         
         public void setMessageState(int NEWmessageState) {
-            this.messageState = NEWmessageState;
+            this.messageStateNEXT = NEWmessageState;
         }
         
         public boolean pushMessageState() {
@@ -79,5 +80,9 @@ public class Node {
                 return false;  // We return FALSE if the message was already up to date
             }
             
+        }
+        
+        public void commitMessageState() {
+            this.messageState = this.messageStateNEXT;
         }
 }
