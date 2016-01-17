@@ -17,8 +17,8 @@ public class Grid {
         int trafficTotal        = 0;
         int t_last              = 0;
         int t_current           = 0;
-        int t_sum              = 0;
-        
+        int t_sum               = 0;
+        float t_avrg            = 0;
         
 	public Grid(int numNodes, int windowFromOrig, int maxDistNodes, int k) {
 		this.windowFromOrig = windowFromOrig;
@@ -27,6 +27,10 @@ public class Grid {
 		this.nodes.add(0, new Node(0,0,k));  // Assuming a root node @ (0,0)
                 this.k = k;
 		this.createNetwork();
+                
+                // Building the neightbour list for EACH of the nodes
+                for (int i=0; i < this.numNodes; i++)
+                    this.buildNeighbourList(this.nodes.get(i));
 	}
 	
 	public void createNetwork() { 
@@ -116,9 +120,7 @@ public class Grid {
             }
             
             this.t_sum += (this.LASTsuceptibleNodes - this.susceptibleNodes)*this.t_current;  
-            
-            System.out.println("S " + this.susceptibleNodes +"\nlastS " + this.LASTsuceptibleNodes +"\nsum " + this.t_sum);
-            
+            this.t_avrg = (float)this.t_sum/this.numNodes;
         }
         
         public int buildNeighbourList(Node node) {
@@ -164,7 +166,7 @@ public class Grid {
             System.out.println("REMOVED     NODES : " + this.removedNodes);
             System.out.println("TOTAL     TRAFFIC : " + this.trafficTotal);
             System.out.println("t_LAST : " + this.t_last);
-            System.out.println("t_AVRG : " + (float)this.t_sum/this.t_current);
+            System.out.println("t_AVRG : " + this.t_avrg);
         }
 }
         
