@@ -16,8 +16,10 @@ public class SdisGossip {
     
     public static void main(String[] args) {
         
+        int k = 2;
+        
         // Creates the grid object
-        Grid meshNetwork = new Grid(1000, 40, 80, 2);
+        Grid meshNetwork = new Grid(1000, 40, 80, k);
         
         // The current message state
         int currentMsgState = 1;
@@ -45,11 +47,8 @@ public class SdisGossip {
             // The nodes exchange messages
             meshNetwork.pushGossipUpdates();
             
-            // The network updates itself;
-            meshNetwork.updateNetworkVariables();
-            
             // DEBUG ONLY: Prints the network state
-            //System.out.println("Iteration " + t++ + ":");
+            System.out.println("Iteration " + t++ + ":");
             //meshNetwork.printStateList();
             //meshNetwork.printNetworkVariables();
             //System.out.println("********************");
@@ -59,10 +58,10 @@ public class SdisGossip {
         }
         
         // Prints the FINAL network state
-        System.out.println("Final Network State: ");
+        System.out.println("Final Network State (k=" + k +"): ");
         //meshNetwork.printStateList();
         meshNetwork.printNetworkVariables();
-        System.out.println("\n s = " + meshNetwork.susceptibleNodes/1000.0 + " -- e^(-m) = " + Math.exp(-meshNetwork.trafficTotal/1000.0));
+        System.out.println("\ns      = " + meshNetwork.susceptibleNodes/1000.0 + "\ne^(-m) = " + Math.exp(-meshNetwork.trafficTotal/1000.0));
         System.out.println("********************");
         
         

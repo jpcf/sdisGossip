@@ -10,11 +10,16 @@ public class Grid {
         int maxDistNodes;
         int k;
 	ArrayList<Node> nodes = new ArrayList();
-        int susceptibleNodes = 0;
-        int infectiveNodes   = 0;
-        int removedNodes     = 0;
-        int trafficTotal     = 0;
-
+        int susceptibleNodes    = 0;
+        int infectiveNodes      = 0;
+        int removedNodes        = 0;
+        int LASTsuceptibleNodes = 0;
+        int trafficTotal        = 0;
+        int t_last              = 0;
+        int t_current           = 0;
+        int t_sum              = 0;
+        
+        
 	public Grid(int numNodes, int windowFromOrig, int maxDistNodes, int k) {
 		this.windowFromOrig = windowFromOrig;
 		this.numNodes = numNodes;
@@ -71,10 +76,11 @@ public class Grid {
                 }
             }
             
-            
-            
             // The updates are committed
             this.commitUpdates();
+            
+            // The internal time step counter is incremented
+            this.t_current++;
             
             // The network updates its internal statistics
             this.updateNetworkVariables();
@@ -90,6 +96,7 @@ public class Grid {
         }
         
         public void updateNetworkVariables() {
+            this.LASTsuceptibleNodes = this.susceptibleNodes;
             this.susceptibleNodes = 0;
             this.infectiveNodes   = 0;
             this.removedNodes     = 0;
@@ -103,6 +110,15 @@ public class Grid {
                     this.removedNodes     += 1;
                 }   
             }
+            
+            if (this.infectiveNodes == 0) {
+                this.t_last = this.t_current;
+            }
+            
+            this.t_sum += (this.LASTsuceptibleNodes - this.susceptibleNodes)*this.t_current;  
+            
+            System.out.println("S " + this.susceptibleNodes +"\nlastS " + this.LASTsuceptibleNodes +"\nsum " + this.t_sum);
+            
         }
         
         public int buildNeighbourList(Node node) {
@@ -146,7 +162,9 @@ public class Grid {
             System.out.println("SUSCEPTIBLE NODES : " + this.susceptibleNodes);
             System.out.println("INFECTIVE   NODES : " + this.infectiveNodes);
             System.out.println("REMOVED     NODES : " + this.removedNodes);
-            System.out.println("TOTAL TRAFFIC     : " + this.trafficTotal);
+            System.out.println("TOTAL     TRAFFIC : " + this.trafficTotal);
+            System.out.println("t_LAST : " + this.t_last);
+            System.out.println("t_AVRG : " + (float)this.t_sum/this.t_current);
         }
 }
         
