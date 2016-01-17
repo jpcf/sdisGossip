@@ -11,12 +11,19 @@ package sdisgossip;
  * 
  *          Porto, Portugal (2016)
  */
+
 public class SdisGossip {
     
     public static void main(String[] args) {
         
-        Grid meshNetwork = new Grid(10, 6, 7);
+        // Creates the grid object
+        Grid meshNetwork = new Grid(10, 5, 10, 2);
+        
+        // The current message state
         int currentMsgState = 1;
+        
+        // The iteration counter
+        int t = 1;
         
         // DEBUG ONLY: Prints the recently generated network
         meshNetwork.printNetwork();
@@ -26,31 +33,37 @@ public class SdisGossip {
             meshNetwork.buildNeighbourList(meshNetwork.nodes.get(i));
         
         // DEBUG ONLY: Prints the Neighbour list for a given node
-        meshNetwork.nodes.get(0).printNodeNeighbourList();
+        //meshNetwork.nodes.get(0).printNodeNeighbourList();
         
-        // The Algorithm Iterations
+        // ------- The Algorithm Iterations -------- //
         
-        meshNetwork.nodes.get(0).setMessageState(currentMsgState++); // The initial propagation to the root node
-        meshNetwork.nodes.get(0).commitMessageState(); // The initial propagation to the root node
+        // Infecting the root node to start the epidemy
+        meshNetwork.infectRootNode(currentMsgState++);
         
-        for(int t=0; t < 10; t++) {
+        while(meshNetwork.infectiveNodes > 0) {
             
-            // The nodes update their state
-            meshNetwork.pushUpdates();
+            // The nodes exchange messages
+            meshNetwork.pushGossipUpdates();
+            
+            // The network updates itself;
+            meshNetwork.updateNetworkVariables();
             
             // DEBUG ONLY: Prints the network state
-            System.out.println("Iteration " + t + ":");
-            meshNetwork.printMessageStateList();
+            System.out.println("Iteration " + t++ + ":");
+            meshNetwork.printStateList();
+            meshNetwork.printNetworkVariables();
             System.out.println("********************");
-            
+          
             // We propagate the next update to the ROOT node
-            meshNetwork.nodes.get(0).setMessageState(currentMsgState++);
+            //meshNetwork.nodes.get(0).setMessageState(currentMsgState++);
         }
         
         // DEBUG ONLY: Prints the FINAL network state
-        System.out.println("Final Network State: ");
-        meshNetwork.printMessageStateList();
-        System.out.println("********************");
+        //System.out.println("Final Network State: ");
+        //meshNetwork.printStateList();
+        //System.out.println("********************");
+        
+        
            
     }
     

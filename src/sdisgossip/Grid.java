@@ -8,13 +8,18 @@ public class Grid {
 	int numNodes;
 	int windowFromOrig;
         int maxDistNodes;
+        int k;
 	ArrayList<Node> nodes = new ArrayList();
+        int susceptibleNodes = 0;
+        int infectiveNodes   = 0;
+        int removedNodes     = 0;
 
-	public Grid(int numNodes, int windowFromOrig, int maxDistNodes) {
+	public Grid(int numNodes, int windowFromOrig, int maxDistNodes, int k) {
 		this.windowFromOrig = windowFromOrig;
 		this.numNodes = numNodes;
                 this.maxDistNodes = maxDistNodes;
-		this.nodes.add(0, new Node(0,0));  // Assuming a root node @ (0,0)~
+		this.nodes.add(0, new Node(0,0,k));  // Assuming a root node @ (0,0)
+                this.k = k;
 		this.createNetwork();
 	}
 	
@@ -32,7 +37,7 @@ public class Grid {
             
             // And we assign each new node to its position
             for(int i=0; i < this.numNodes-1; i++) {
-                nodes.add(new Node(gridAbsPos.get(i)/this.windowFromOrig, gridAbsPos.get(i) % this.windowFromOrig));
+                nodes.add(new Node(gridAbsPos.get(i)/this.windowFromOrig, gridAbsPos.get(i) % this.windowFromOrig, k));
             }
             
 	}
@@ -44,7 +49,26 @@ public class Grid {
             }
             
             // The updates are committed
+            this.updateNetworkVariables();
+        }
+        
+        public void pushGossipUpdates() {
+            // The Nodes Push their updates
+            for(int i=0; i < this.numNodes; i++) {
+                if (this.nodes.get(i).getNodeState() != Node.REMOVED) {
+                    boolean success = this.nodes.get(i).pushGossipMessageState();
+                    if(!success) {
+                        System.out.println("I didn't succeeded in gossiping :( (Node " + i + ")");
+                    }
+                }
+            }
+            
+            // The updates are committed
             this.commitUpdates();
+            
+            // The network updates its internal statistics
+            this.updateNetworkVariables();
+            
         }
         
 	public void commitUpdates() {
@@ -54,6 +78,23 @@ public class Grid {
                 nodes.get(i).commitMessageState();
             }
         }
+        
+        public void updateNetworkVariables() {
+            this.susceptibleNodes = 0;
+            this.infectiveNodes   = 0;
+            this.removedNodes     = 0;
+            
+            for(int i=0; i < this.numNodes; i++) {
+                if ( nodes.get(i).getNodeState()        == Node.SUSCEPTIBLE) {
+                    this.susceptibleNodes += 1;
+                } else if ( nodes.get(i).getNodeState() == Node.INFECTIVE  ) {
+                    this.infectiveNodes += 1;
+                } else if ( nodes.get(i).getNodeState() == Node.REMOVED    ) {
+                    this.removedNodes += 1;
+                }   
+            }
+        }
+        
         public int buildNeighbourList(Node node) {
             
             int count = 0;
@@ -72,15 +113,31 @@ public class Grid {
             return count;
         }
         
+        public void infectRootNode(int valueToInfect) {
+            this.nodes.get(0).setMessageState(valueToInfect); // The initial propagation to the root node
+            this.nodes.get(0).commitMessageState(); // The initial propagation to the root node
+            this.updateNetworkVariables();
+            this.printStateList();
+            this.printNetworkVariables();
+        }        
+        
         public void printNetwork() {
 		for (int i = 0; i < this.numNodes; i++){
 			System.out.println("node " + i + "(" + nodes.get(i).gridPosition.xPos + "," + nodes.get(i).gridPosition.yPos + ")");
 		}
 	}
         
-        public void printMessageStateList() {
+        public void printStateList() {
             for(int i=0; i < this.numNodes; i++) {
-                System.out.println("Node (" + i + ") @(" + nodes.get(i).getXcoordinate() +","+nodes.get(i).getYcoordinate() +"): " + nodes.get(i).getMessageState());
+                System.out.println("Node (" + i + ") @(" + nodes.get(i).getXcoordinate() +","+nodes.get(i).getYcoordinate() +"): " + nodes.get(i).getMessageState()
+                                                + "--- STATE: " + nodes.get(i).getNodeState());
             }
         }
+        
+        public void printNetworkVariables() {
+            System.out.println("SUSCEPTIBLE NODES : " + this.susceptibleNodes);
+            System.out.println("INFECTIVE   NODES : " + this.infectiveNodes);
+            System.out.println("REMOVED     NODES : " + this.removedNodes);
+        }
 }
+        
