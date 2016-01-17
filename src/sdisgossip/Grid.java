@@ -55,7 +55,8 @@ public class Grid {
         public void pushGossipUpdates() {
             // The Nodes Push their updates
             for(int i=0; i < this.numNodes; i++) {
-                if (this.nodes.get(i).getNodeState() != Node.REMOVED) {
+                // Only infective nodes can actually communicate
+                if (this.nodes.get(i).getNodeState() == Node.INFECTIVE) {
                     boolean success = this.nodes.get(i).pushGossipMessageState();
                     if(!success) {
                         System.out.println("I didn't succeeded in gossiping :( (Node " + i + ")");
@@ -88,9 +89,9 @@ public class Grid {
                 if ( nodes.get(i).getNodeState()        == Node.SUSCEPTIBLE) {
                     this.susceptibleNodes += 1;
                 } else if ( nodes.get(i).getNodeState() == Node.INFECTIVE  ) {
-                    this.infectiveNodes += 1;
+                    this.infectiveNodes   += 1;
                 } else if ( nodes.get(i).getNodeState() == Node.REMOVED    ) {
-                    this.removedNodes += 1;
+                    this.removedNodes     += 1;
                 }   
             }
         }
