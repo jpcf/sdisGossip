@@ -17,7 +17,7 @@ public class SdisGossip {
     public static void main(String[] args) {
         
         // Creates the grid object
-        Grid meshNetwork = new Grid(10, 5, 10, 2);
+        Grid meshNetwork = new Grid(1000, 40, 80, 2);
         
         // The current message state
         int currentMsgState = 1;
@@ -26,7 +26,7 @@ public class SdisGossip {
         int t = 1;
         
         // DEBUG ONLY: Prints the recently generated network
-        meshNetwork.printNetwork();
+        //meshNetwork.printNetwork();
         
         // Building the neightbour list for EACH of the nodes
         for (int i=0; i < meshNetwork.numNodes; i++)
@@ -49,19 +49,21 @@ public class SdisGossip {
             meshNetwork.updateNetworkVariables();
             
             // DEBUG ONLY: Prints the network state
-            System.out.println("Iteration " + t++ + ":");
-            meshNetwork.printStateList();
-            meshNetwork.printNetworkVariables();
-            System.out.println("********************");
+            //System.out.println("Iteration " + t++ + ":");
+            //meshNetwork.printStateList();
+            //meshNetwork.printNetworkVariables();
+            //System.out.println("********************");
           
             // We propagate the next update to the ROOT node
             //meshNetwork.nodes.get(0).setMessageState(currentMsgState++);
         }
         
-        // DEBUG ONLY: Prints the FINAL network state
-        //System.out.println("Final Network State: ");
+        // Prints the FINAL network state
+        System.out.println("Final Network State: ");
         //meshNetwork.printStateList();
-        //System.out.println("********************");
+        meshNetwork.printNetworkVariables();
+        System.out.println("\n s = " + meshNetwork.susceptibleNodes/1000.0 + " -- e^(-m) = " + Math.exp(-meshNetwork.trafficTotal/1000.0));
+        System.out.println("********************");
         
         
            

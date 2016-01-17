@@ -13,6 +13,7 @@ public class Grid {
         int susceptibleNodes = 0;
         int infectiveNodes   = 0;
         int removedNodes     = 0;
+        int trafficTotal     = 0;
 
 	public Grid(int numNodes, int windowFromOrig, int maxDistNodes, int k) {
 		this.windowFromOrig = windowFromOrig;
@@ -58,11 +59,19 @@ public class Grid {
                 // Only infective nodes can actually communicate
                 if (this.nodes.get(i).getNodeState() == Node.INFECTIVE) {
                     boolean success = this.nodes.get(i).pushGossipMessageState();
-                    if(!success) {
-                        System.out.println("I didn't succeeded in gossiping :( (Node " + i + ")");
-                    }
+                    
+                    // DEBUG ONLY
+                    //if(!success) {
+                    //    System.out.println("I didn't succeeded in gossiping :( (Node " + i + ")");
+                    //}
+                    
+                    // We update the traffic counter for another exchanged message
+                    this.trafficTotal++;
+                    
                 }
             }
+            
+            
             
             // The updates are committed
             this.commitUpdates();
@@ -118,8 +127,6 @@ public class Grid {
             this.nodes.get(0).setMessageState(valueToInfect); // The initial propagation to the root node
             this.nodes.get(0).commitMessageState(); // The initial propagation to the root node
             this.updateNetworkVariables();
-            this.printStateList();
-            this.printNetworkVariables();
         }        
         
         public void printNetwork() {
@@ -139,6 +146,7 @@ public class Grid {
             System.out.println("SUSCEPTIBLE NODES : " + this.susceptibleNodes);
             System.out.println("INFECTIVE   NODES : " + this.infectiveNodes);
             System.out.println("REMOVED     NODES : " + this.removedNodes);
+            System.out.println("TOTAL TRAFFIC     : " + this.trafficTotal);
         }
 }
         
