@@ -136,6 +136,47 @@ public class Node {
             }
             
         }
+         
+        public boolean pushCounterMessageState() {
+            // Pick a random node from the list of Neighbours
+            Node otherNode = neighbourNodes.get(randGenerator.nextInt(this.neighbourNodes.size()));
+            
+            // If that node's message is different than ours, we update it
+            if (otherNode.getMessageState() < this.messageState) {
+                // We try to push our update to the other node
+                otherNode.setMessageState(this.messageState);
+                
+                // We return TRUE if we succeded in updating the message
+                return true;   
+            } else {
+                // Since the message was already up to date, the node removes itself with probability 1/k
+                if(this.nodeState == Node.INFECTIVE)
+                    // We decrement k, since we failed on passing a message
+                    this.k--;
+                
+                    // If k is zero, it means that the node failed on passing a message the supposed number of times, so it removes itself
+                    if(k == 0)
+                        this.nodeStateNEXT = Node.REMOVED;
+                // We return FALSE if the message was already up to date
+                return false;  
+            }
+            
+        }
+        
+        public void pushBlindRemovalMessageState() {
+            // Pick a random node from the list of Neighbours
+            Node otherNode = neighbourNodes.get(randGenerator.nextInt(this.neighbourNodes.size()));
+            
+            // If that node's message is different than ours, we update it
+            if (otherNode.getMessageState() < this.messageState) {
+                // We try to push our update to the other node
+                otherNode.setMessageState(this.messageState); 
+            } 
+            
+            // Regardless of the success in sending the update, the node removes itself with probability 1/k
+            if(Math.random() < 1.0/k)
+                this.nodeStateNEXT = Node.REMOVED;    
+        }
         
         
 }

@@ -52,6 +52,9 @@ public class Grid {
             
 	}
 	
+        /**
+         * Function that updates the nodes, based on a pure Push approach
+         */
         public void pushUpdates() {
             // The Nodes Push their updates
             for(int i=0; i < this.numNodes; i++) {
@@ -62,12 +65,79 @@ public class Grid {
             this.updateNetworkVariables();
         }
         
+        /**
+         * Function that updates the nodes, based on a pure Gossip approach
+         */
         public void pushGossipUpdates() {
             // The Nodes Push their updates
             for(int i=0; i < this.numNodes; i++) {
                 // Only infective nodes can actually communicate
                 if (this.nodes.get(i).getNodeState() == Node.INFECTIVE) {
                     boolean success = this.nodes.get(i).pushGossipMessageState();
+                    
+                    // DEBUG ONLY
+                    //if(!success) {
+                    //    System.out.println("I didn't succeeded in gossiping :( (Node " + i + ")");
+                    //}
+                    
+                    // We update the traffic counter for another exchanged message
+                    this.trafficTotal++;
+                    
+                }
+            }
+            
+            // The updates are committed
+            this.commitUpdates();
+            
+            // The internal time step counter is incremented
+            this.t_current++;
+            
+            // The network updates its internal statistics
+            this.updateNetworkVariables();
+            
+        }
+        
+        /**
+         * Function that updates the nodes, based on a Gossip and Counters approach
+         */
+        public void pushCounterUpdates() {
+            // The Nodes Push their updates
+            for(int i=0; i < this.numNodes; i++) {
+                // Only infective nodes can actually communicate
+                if (this.nodes.get(i).getNodeState() == Node.INFECTIVE) {
+                    boolean success = this.nodes.get(i).pushCounterMessageState();
+                    
+                    // DEBUG ONLY
+                    //if(!success) {
+                    //    System.out.println("I didn't succeeded in gossiping :( (Node " + i + ")");
+                    //}
+                    
+                    // We update the traffic counter for another exchanged message
+                    this.trafficTotal++;
+                    
+                }
+            }
+            
+            // The updates are committed
+            this.commitUpdates();
+            
+            // The internal time step counter is incremented
+            this.t_current++;
+            
+            // The network updates its internal statistics
+            this.updateNetworkVariables();
+            
+        }
+        
+        /**
+         * Function that updates the nodes, based on a Gossip and Counters approach
+         */
+        public void pushBlindRemovalUpdates() {
+            // The Nodes Push their updates
+            for(int i=0; i < this.numNodes; i++) {
+                // Only infective nodes can actually communicate
+                if (this.nodes.get(i).getNodeState() == Node.INFECTIVE) {
+                    this.nodes.get(i).pushBlindRemovalMessageState();
                     
                     // DEBUG ONLY
                     //if(!success) {
