@@ -21,20 +21,27 @@ import java.util.logging.Logger;
 public class SdisGossip {
     
     public static void main(String[] args) {
+        // Checks for the correct number of arguments
+        if (args.length != 5) 
+            System.out.println("USAGE: java -cp ./src sdisgossip.SdisGossip <numNodes> <maxk> <sim_type> <numSims> <verbose>");
         
-        int k = 7;
-        
-        // The current message state
-        int currentMsgState = 1;
-        
-        // Number of simulations
-        int numSims  = 500;
-        int numNodes = 1000;
+        // Parsing the simualtion parameters from the input
+        int k = Integer.parseInt(args[1]);
+        int numSims  = Integer.parseInt(args[3]);
+        int numNodes = Integer.parseInt(args[0]);
         
         // Testing the  Pure Feedback Approach
-        new SdisGossip().pureGossipPush_sim(numNodes, numSims, k);
-        new SdisGossip().counterGossipPush_sim(numNodes, numSims, k);
-        new SdisGossip().blindRemovalPush_sim(numNodes, numSims, k);
+        switch(args[2]) {
+            case "push_gossip" :
+                new SdisGossip().pureGossipPush_sim(numNodes, numSims, k);
+                break;
+            case "push_counter" :
+                new SdisGossip().counterGossipPush_sim(numNodes, numSims, k);
+                break;
+            case "push_blind" :
+                new SdisGossip().blindRemovalPush_sim(numNodes, numSims, k);
+                break;
+        }
         
     }  
     
