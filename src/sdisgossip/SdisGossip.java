@@ -66,7 +66,7 @@ public class SdisGossip {
         
         outputFile.println("k, S, S(std), m, m(std), e^(-m), t_average, t_average(std), t_last, t_last(std), t_average/t_last");
         
-        for(int k=1; k < maxk; k++) {
+        for(int k=1; k <= maxk; k++) {
         
             float s_sum      = 0;
             float m_sum      = 0;
@@ -163,7 +163,7 @@ public class SdisGossip {
         
         outputFile.println("k, S, S(std), m, m(std), e^(-m), t_average, t_average(std), t_last, t_last(std), t_average/t_last");
         
-        for(int k=1; k < maxk; k++) {
+        for(int k=1; k <= maxk; k++) {
         
             float s_sum      = 0;
             float m_sum      = 0;
@@ -260,7 +260,7 @@ public class SdisGossip {
         
         outputFile.println("k, S, S(std), m, m(std), e^(-m), t_average, t_average(std), t_last, t_last(std), t_average/t_last");
         
-        for(int k=1; k < maxk; k++) {
+        for(int k=1; k <= maxk; k++) {
         
             float s_sum      = 0;
             float m_sum      = 0;
