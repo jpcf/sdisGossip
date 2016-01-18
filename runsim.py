@@ -104,7 +104,9 @@ with open('blindRemoval_Push.csv', 'rt') as file:
         k += 1
 
 # Plots the results
-plt.plot(range(1, maxK+1, 1), s_blind[:,0], 'o')
-plt.plot(range(1, maxK+1, 1), s_counter[:,0], 'o')
-plt.plot(range(1, maxK+1, 1), s_gossip[:,0], 'o')
+plt.figure(1)
+plt.plot(range(1, maxK+1, 1), s_blind[:,0], 'o', label='Blind Removal')
+plt.plot(range(1, maxK+1, 1), s_counter[:,0], 'o', label='Feedback & Counters')
+plt.plot(range(1, maxK+1, 1), s_gossip[:,0], 'o', label='Naive Gossiping')
+plt.legend(loc=1)
 plt.show()
