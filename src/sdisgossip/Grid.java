@@ -161,12 +161,134 @@ public class Grid {
             
         }
         
+          /**
+         * Function that updates the nodes, based on a pure Pull approach
+         */
+        public void pullUpdates() {
+            // The Nodes Pull their updates
+            for(int i=0; i < this.numNodes; i++) {
+                this.nodes.get(i).pullMessageState();
+            }
+            
+            // The updates are committed
+            this.updateNetworkVariables();
+        }
+        
+        /**
+         * Function that updates the nodes, based on a pure Gossip approach
+         */
+        public void pullGossipUpdates() {
+            // The Nodes Pull their updates
+            for(int i=0; i < this.numNodes; i++) {
+                // Only infective nodes can actually communicate
+                if (this.nodes.get(i).getNodeState() != Node.REMOVED) {
+                    boolean success = this.nodes.get(i).pullGossipMessageState();
+                    
+                    // DEBUG ONLY
+                    //if(!success) {
+                    //    System.out.println("I didn't succeeded in gossiping :( (Node " + i + ")");
+                    //}
+                    
+                    // We update the traffic counter for another exchanged message
+                    this.trafficTotal++;
+                    
+                }
+            }
+            
+            // The updates are committed
+            this.commitUpdates();
+            
+            // The internal time step counter is incremented
+            this.t_current++;
+            
+            // The network updates its internal statistics
+            this.updateNetworkVariables();
+            
+        }
+        
+        /**
+         * Function that updates the nodes, based on a Gossip and Counters approach
+         */
+        public void pullCounterUpdates() {
+            
+            // The Nodes Pull their updates
+            for(int i=0; i < this.numNodes; i++) {
+                // Only infective nodes can actually communicate
+                if (this.nodes.get(i).getNodeState() != Node.REMOVED) {   
+                    boolean success = this.nodes.get(i).pullCounterMessageState();
+                    
+                    // DEBUG ONLY
+                    //if(!success) {
+                    //    System.out.println("I didn't succeeded in gossiping :( (Node " + i + ")");
+                    //}
+                    
+                    // We update the traffic counter for another exchanged message
+                    this.trafficTotal++;
+                    
+                }
+            }
+            
+            // The updates are committed
+            this.commitPullUpdates();
+          
+            // The internal time step counter is incremented
+            this.t_current++;
+            
+            // The network updates its internal statistics
+            this.updateNetworkVariables();
+            
+           // this.printNetworkVariables();
+            
+        }
+        
+        /**
+         * Function that updates the nodes, based on a Gossip and Counters approach
+         */
+        public void pullBlindRemovalUpdates() {
+            // The Nodes Pull their updates
+            for(int i=0; i < this.numNodes; i++) {
+                // Only susceptible nodes actually want to pull
+                if (this.nodes.get(i).getNodeState() == Node.SUSCEPTIBLE) { 
+                    this.nodes.get(i).pullBlindRemovalMessageState();       
+                    
+                    // DEBUG ONLY
+                    //if(!success) {
+                    //    System.out.println("I didn't succeeded in gossiping :( (Node " + i + ")");
+                    //}
+                    
+                    // We update the traffic counter for another exchanged message
+                    this.trafficTotal++;
+                    
+                }
+            }
+            
+            // The updates are committed
+            this.commitUpdates();
+            
+            // The internal time step counter is incremented
+            this.t_current++;
+            
+            // The network updates its internal statistics
+            this.updateNetworkVariables();
+            
+        }
+        
 	public void commitUpdates() {
             // We commit the current message state in all nodes
             // This prevents that nodes change state in chain, during the same timestep
             for(int i=0; i < this.numNodes; i++) {
                 nodes.get(i).commitMessageState();
             }
+        }
+        
+        public void commitPullUpdates() {
+            // We commit the current message state in all nodes
+            // This prevents that nodes change state in chain, during the same timestep
+            for(int i=0; i < this.numNodes; i++) {
+                nodes.get(i).commitPullMessageState();
+            }
+            
+            
         }
         
         public void updateNetworkVariables() {
@@ -214,6 +336,12 @@ public class Grid {
         public void infectRootNode(int valueToInfect) {
             this.nodes.get(0).setMessageState(valueToInfect); // The initial propagation to the root node
             this.nodes.get(0).commitMessageState(); // The initial propagation to the root node
+//             this.nodes.get(10).setMessageState(valueToInfect); // The initial propagation to the root node
+//             this.nodes.get(10).commitMessageState(); // The initial propagation to the root node
+//             this.nodes.get(30).setMessageState(valueToInfect); // The initial propagation to the root node
+//             this.nodes.get(30).commitMessageState(); // The initial propagation to the root node
+//             this.nodes.get(70).setMessageState(valueToInfect); // The initial propagation to the root node
+//             this.nodes.get(70).commitMessageState(); // The initial propagation to the root node
             this.updateNetworkVariables();
         }        
         

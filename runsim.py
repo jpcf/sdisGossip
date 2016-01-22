@@ -19,14 +19,16 @@ class singleSimThread (threading.Thread):
 
 # Simulation Parameters
 maxK = 5
+numSims = 2000;
 
 # Compiles the project
 os.system("javac src/sdisgossip/*.java");
 
 # Now, the program runs a simulation for each of the test variants
-threadG  = singleSimThread(1000, maxK, "push_gossip",  50, 0)
-threadB  = singleSimThread(1000, maxK, "push_blind",   50, 0)
-threadC  = singleSimThread(1000, maxK, "push_counter", 50, 0)
+threadG  = singleSimThread(1000, maxK, "push_gossip",  numSims, 0)
+threadB  = singleSimThread(1000, maxK, "push_blind", numSims, 0)
+threadC  = singleSimThread(1000, maxK, "push_counter", numSims, 0)
+threadCpull  = singleSimThread(1000, maxK, "pull_counter", numSims, 0)
 
 print("***** SIMULATION STARTED! *****")
 startTime = time.time()    # Keeps track of the start time
@@ -35,9 +37,11 @@ startTime = time.time()    # Keeps track of the start time
 threadG.start()
 threadB.start()
 threadC.start()
+#threadCpull.start()
 threadG.join()
 threadB.join()
 threadC.join()
+#threadCpull.join()
 
 stopTime = time.time()    # Keeps track of when the simulation ended
 print("***** SIMULATION ENDED! Elapsed Time: {}".format(stopTime - startTime))
@@ -64,6 +68,32 @@ with open('counterGossip_Push.csv', 'rt') as file:
             tQ_counter[k-1,0] = float(line[10])
         k += 1
 
+s_counter_pull = np.zeros((maxK,2))
+m_counter_pull = np.zeros((maxK,2))
+e_counter_pull = np.zeros((maxK,1))
+tA_counter_pull = np.zeros((maxK,2))
+tL_counter_pull = np.zeros((maxK,2))
+tQ_counter_pull = np.zeros((maxK,1))
+
+with open('counterGossip_Pull.csv', 'rt') as file:
+    k = 0;
+    lines = csv.reader(file)
+    for line in lines:
+        if k != 0:
+            s_counter_pull[k-1,0], s_counter_pull[k-1,1] = float(line[1]), float(line[2])
+            m_counter_pull[k-1,0], m_counter_pull[k-1,1] = float(line[3]), float(line[4])
+            e_counter_pull[k-1,0] = float(line[5])
+            tA_counter_pull[k-1,0], tA_counter_pull[k-1,1] = float(line[6]), float(line[7])
+            tL_counter_pull[k-1,0], tA_counter_pull[k-1,1] = float(line[8]), float(line[9])
+            tQ_counter_pull[k-1,0] = float(line[10])
+        k += 1
+
+s_gossip = np.zeros((maxK,2))
+m_gossip = np.zeros((maxK,2))
+e_gossip = np.zeros((maxK,1))
+tA_gossip = np.zeros((maxK,2))
+tL_gossip = np.zeros((maxK,2))
+tQ_gossip = np.zeros((maxK,1))
 s_gossip = np.zeros((maxK,2))
 m_gossip = np.zeros((maxK,2))
 e_gossip = np.zeros((maxK,1))
@@ -112,13 +142,22 @@ print("\nFraction of Susceptible Nodes After no Infective Nodes Left-- Push")
 rc('text', usetex=True);
 rc('font', family='serif', serif='Times');
 plt.figure(1)       # The fraction of susceptible nodes
+plt.subplot(1,2,1)
 plt.title("Fraction of Susceptible Nodes After no Infective Nodes Left-- Push")
-plt.axis([0, 6, 0, 1])
+plt.axis([0, 6, 0, 1]) 
 plt.xlabel(r"k")
 plt.ylabel(r"s")
 plt.plot(range(1, maxK+1, 1), s_blind[:,0], 'o', label='Blind Removal')
-plt.plot(range(1, maxK+1, 1), s_counter[:,0], 'o', label='Feedback & Counters')
+plt.plot(range(1, maxK+1, 1), s_counter[:,0], 'o', label='Feedback \& Counters')
 plt.plot(range(1, maxK+1, 1), s_gossip[:,0], 'o', label='Naive Gossiping')
+plt.legend(loc=1)
+
+plt.subplot(1,2,2)
+plt.title("Fraction of Susceptible Nodes After no Infective Nodes Left-- Pull")
+plt.axis([0, 6, 0, 1])
+plt.xlabel(r"k")
+plt.ylabel(r"s")
+plt.plot(range(1, maxK+1, 1), s_counter_pull[:,0], 'o', label='Feedback \& Counters')
 plt.legend(loc=1)
 
 plt.figure(2)       # The average traffic per node
@@ -127,17 +166,17 @@ plt.axis([0, 6, 0, 7])
 plt.xlabel(r"k")
 plt.ylabel(r"m")
 plt.plot(range(1, maxK+1, 1), m_blind[:,0], 'o', label='Blind Removal')
-plt.plot(range(1, maxK+1, 1), m_counter[:,0], 'o', label='Feedback & Counters')
+plt.plot(range(1, maxK+1, 1), m_counter[:,0], 'o', label='Feedback \& Counters')
 plt.plot(range(1, maxK+1, 1), m_gossip[:,0], 'o', label='Naive Gossiping')
 plt.legend(loc=4)
 
 plt.figure(3)       # The average traffic per node
 plt.title("Average Node Update Time -- Push")
-plt.axis([0, 6, 8, 13])
+plt.axis([0, 6, 6, max(tA_blind[:,0])])
 plt.ylabel(r"$t_{avg}$ (s)")
 plt.xlabel(r"k")
 plt.plot(range(1, maxK+1, 1), tA_blind[:,0], 'o', label='Blind Removal')
-plt.plot(range(1, maxK+1, 1), tA_counter[:,0], 'o', label='Feedback & Counters')
+plt.plot(range(1, maxK+1, 1), tA_counter[:,0], 'o', label='Feedback \& Counters')
 plt.plot(range(1, maxK+1, 1), tA_gossip[:,0], 'o', label='Naive Gossiping')
 plt.legend(loc=4)
 
@@ -147,7 +186,7 @@ plt.axis([0, 6, 0, 50])
 plt.ylabel(r"$t_{last}$ (s)")
 plt.xlabel(r"k")
 plt.plot(range(1, maxK+1, 1), tL_blind[:,0], 'o', label='Blind Removal')
-plt.plot(range(1, maxK+1, 1), tL_counter[:,0], 'o', label='Feedback & Counters')
+plt.plot(range(1, maxK+1, 1), tL_counter[:,0], 'o', label='Feedback \& Counters')
 plt.plot(range(1, maxK+1, 1), tL_gossip[:,0], 'o', label='Naive Gossiping')
 plt.legend(loc=4)
 plt.show()
